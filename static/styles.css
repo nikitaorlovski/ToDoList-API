@@ -1,0 +1,321 @@
+/* ========== THEME (dark only) ========== */
+:root{
+  --bg:#0b0e12;
+  --surface:#0f141b;
+  --card:#121820;
+  --text:#e8eef6;
+  --muted:#98a2ad;
+  --line:#1d2632;
+
+  --primary:#e5e7eb;
+  --primary-contrast:#0b0e12;
+
+  --success:#22c55e;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;
+  color:var(--text);
+  background:var(--bg);
+}
+
+/* ========== LAYOUT ========== */
+.container{min-height:100dvh; padding:24px}
+.page{
+  width:100%;
+  max-width:1200px;
+  margin:0 auto;
+  padding:8px 24px 24px;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.page-head{display:flex; justify-content:space-between; align-items:center; gap:12px}
+.title{margin:0; font-size:28px; line-height:1.2; font-weight:800}
+.muted{color:var(--muted)}
+
+/* ========== ICON BUTTONS ========== */
+.icon-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:38px; height:38px; border:1px solid var(--line);
+  border-radius:10px; background:var(--surface);
+  color:var(--text); cursor:pointer; text-decoration:none;
+}
+.icon-btn svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6}
+.icon-btn.danger{color:var(--danger)}
+
+/* ========== STATS ========== */
+.stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px}
+.stat-icon{width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:#0c1118; border:1px solid var(--line); margin-bottom:10px}
+.stat-icon svg{width:18px; height:18px; fill:none; stroke:var(--text); stroke-width:1.6}
+.stat-icon.success svg{stroke:var(--success)}
+.stat-icon.warn svg{stroke:var(--warn)}
+.stat-num{font-size:28px; font-weight:700; line-height:1}
+.stat-label{color:var(--muted)}
+
+/* ========== TOOLBAR ========== */
+.toolbar{display:flex; align-items:center; gap:12px; flex-wrap:nowrap}
+.search{
+  flex:1; display:flex; align-items:center; gap:8px;
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:12px; padding:10px 12px
+}
+.search input{flex:1; background:transparent; border:0; outline:0; color:var(--text)}
+.search svg{width:18px; height:18px; fill:none; stroke:var(--muted); stroke-width:1.6}
+.filters{display:flex; gap:8px}
+.pill{
+  display:inline-flex; align-items:center; padding:10px 14px;
+  border:1px solid var(--line); border-radius:10px;
+  color:var(--text); text-decoration:none; background:var(--surface)
+}
+.pill.active{background:#101623; border-color:#243044}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:12px 16px; border-radius:12px;
+  border:1px solid var(--line); background:var(--surface);
+  color:var(--text); text-decoration:none; cursor:pointer; font-weight:600; font-size:15px;
+}
+.btn.primary{background:var(--primary); color:var(--primary-contrast); border-color:transparent}
+.btn svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6}
+form .btn{width:100%} /* внутри форм пусть растягивается */
+@media (max-width:820px){
+  .toolbar{flex-wrap:wrap}
+  .toolbar .search{order:1; flex:1 1 100%}
+  .toolbar .filters{order:2}
+  .toolbar .btn{order:3}
+}
+
+/* ========== BADGES ========== */
+.badge{padding:2px 8px; border-radius:999px; font-size:12px; margin-left:6px}
+.badge-muted{background:#374151; color:#e5e7eb}
+.badge-success{background:#1f9d55; color:#fff}
+.badge-low{background:#ffb020; color:#1b1b1b}
+.badge-normal{background:#2563eb; color:#fff}
+.badge-high{background:#ef4444; color:#fff}
+
+/* ========== TASK LIST ========== */
+.task-list{display:flex; flex-direction:column; gap:12px}
+.task{
+  position:relative; display:flex; justify-content:space-between; gap:12px;
+  padding:16px; background:var(--card); border:1px solid var(--line);
+  border-radius:12px; padding-left:16px;
+  transition:transform .15s ease, box-shadow .2s ease;
+}
+.task:hover{transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.task:active{transform:translateY(-1px)}
+.task:focus-visible{outline:2px solid var(--line); outline-offset:3px}
+.task-main{display:flex; gap:12px; align-items:flex-start; cursor:pointer}
+.task-title{margin:0 0 4px; font-size:16.5px; font-weight:800}
+/* приоритетная полоска слева */
+.task::before {
+  content:""; position:absolute; left:0; top:0; bottom:0;
+  width:4px; border-radius:12px 0 0 12px;
+}
+
+.task.status-new::before       { background:#6b7280; }  /* серая */
+.task.status-active::before    { background:#ef4444; }  /* красная */
+.task.status-completed::before { background:#22c55e; }  /* зелёная */
+
+/* ===== AUTH (login/register) ===== */
+.container--auth{min-height:100dvh;display:grid;place-items:center;padding:24px}
+
+.auth-card{
+  width:min(440px,92vw);
+  background:var(--card);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+.auth-body{padding:34px 32px}
+
+/* заголовки */
+.auth-title{margin:0 0 6px;font-size:32px;line-height:1.2;font-weight:800;text-align:center}
+.auth-sub{margin:0 0 24px;color:var(--muted);text-align:center}
+
+/* форма */
+.auth-label{display:block;margin:16px 0 8px;font-size:14px;font-weight:600}
+.auth-row{position:relative;display:flex;align-items:center}
+
+/* кнопка */
+.auth-btn{
+  width:100%;margin-top:18px;padding:12px 16px;border-radius:12px;cursor:pointer;
+  border:1px solid transparent;font-weight:700;
+  background:var(--primary);color:var(--primary-contrast);
+}
+
+/* сообщение об ошибке */
+.auth-alert{
+  margin:0 0 16px;padding:12px 14px;border-radius:10px;font-size:14px;
+  color:#ffb4b4;background:#2a1515;border:1px solid #3a1d1d;
+}
+.auth-foot{margin-top:18px;color:var(--muted);text-align:center}
+.auth-foot a{color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+/* ========== EMPTY / MISC ========== */
+.empty{color:var(--muted); text-align:center; padding:28px; border:1px dashed var(--line); border-radius:12px}
+
+.auth-input {
+  width: 100%;
+  display: block;
+  padding: 12px 44px 12px 44px;  /* место слева под конверт/замок, справа под глаз */
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  outline: 0;
+  font-size: 15px;
+}
+
+/* контейнер с иконкой слева */
+.auth-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;      /* клики проходят на инпут */
+}
+
+.auth-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: #9ca3af;
+  fill: none;
+  stroke-width: 1.6;
+}
+
+/* кнопка-глаз справа */
+.auth-eye {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  color: #9aa3ad;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-eye svg {
+  width: 18px;
+  height: 18px;
+  stroke: #9ca3af;
+  fill: none;
+  stroke-width: 1.6;
+}
+
+/* ====== DIALOG: размеры и поведение ====== */
+.task-dialog{
+  border:none; padding:0; background:transparent;
+  overflow:visible;                  /* убираем скролл у dialog */
+}
+.task-dialog::backdrop{background:rgba(0,0,0,.55); backdrop-filter:blur(2px)}
+
+.dialog-card{
+  width: clamp(560px, 60vw, 820px);  /* умеренная ширина */
+  height: 92vh;                      /* высокая карточка */
+  min-height: 640px;
+  display:flex; flex-direction:column;
+  background:var(--card); color:var(--text);
+  border:1px solid var(--line); border-radius:18px;
+  padding:24px; position:relative;
+  box-shadow:0 14px 40px rgba(0,0,0,.45);
+}
+
+/* заголовок и крестик */
+.dialog-title{margin:0 36px 16px 0; font-size:28px; font-weight:800; line-height:1.2}
+.dialog-close{
+  position:absolute; top:12px; right:12px; width:34px; height:34px;
+  border-radius:10px; border:1px solid var(--line);
+  background:var(--surface); color:var(--text); cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+
+.task-dialog .dialog-body{
+  flex: 1;
+  overflow: auto;
+  padding-right: 6px;
+
+  /* КЛЮЧЕВОЕ: одна колонка, без старых areas */
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr !important;
+  grid-template-areas: none !important;
+  max-height: none !important;
+}
+
+/* Компактные группы полей */
+.form-group{ display: grid; gap: 6px; }
+.form-row{ display: grid; gap: 12px; }
+
+/* На широком экране статус/приоритет в две колонки, на мобилке — в столбик */
+@media (min-width: 720px){
+  .form-row--2{ grid-template-columns: 1fr 1fr; align-items: end; }
+}
+
+.form-label{ color: var(--muted); font-size: 14px; }
+.form-control{
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: inherit;
+}
+textarea.form-control{ min-height: 140px; resize: vertical; line-height: 1.5; }
+
+/* Кнопка всегда на виду */
+.dialog-foot{
+  position: sticky; bottom: 0;
+  background: linear-gradient(to top, rgba(18,24,32,1) 70%, rgba(18,24,32,0));
+  padding-top: 8px; margin-top: 8px;
+  display: flex; justify-content: flex-end;
+}
+.dialog-foot .btn{ min-width: 220px; }
+
+/* Акцент для статуса "в работе" */
+.badge-progress{
+  position: relative;
+  padding-left: 22px;                 /* место под кружок */
+  background: rgba(245,158,11,.14);   /* var(--warn) с прозрачностью */
+  color: #ffdca8;
+  border: 1px solid rgba(245,158,11,.35);
+}
+
+/* компактный диалог удаления */
+.small-dialog .dialog-card {
+  width: min(520px, 90vw);
+  max-height: none;   /* убираем высоту на весь экран */
+  height: auto;       /* под контент */
+  min-height: unset;  /* отключаем минимальную высоту */
+  padding: 22px 24px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.small-dialog .dialog-body {
+  margin: 16px 0;
+}
+
+.small-dialog .dialog-foot {
+  justify-content: flex-end;
+  gap: 10px;
+}
+

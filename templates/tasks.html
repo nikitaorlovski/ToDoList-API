@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+{% block title %}Мои задачи — TodoAPI{% endblock %}
+
+{% block content %}
+<section class="page">
+
+<div class="page-head">
+  <div>
+    <h1 class="title">Мои задачи</h1>
+    <p class="muted">Управляйте своими задачами эффективно</p>
+  </div>
+
+  <form method="post" action="/logout" class="head-actions">
+    <button class="icon-btn danger" title="Выйти" aria-label="Выйти">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8" />
+        <path d="M10 12h10" />
+        <path d="M17 9l3 3-3 3" />
+      </svg>
+    </button>
+  </form>
+</div>
+
+  {% set total     = stats.total     if stats is defined else 0 %}
+  {% set completed = stats.completed if stats is defined else 0 %}
+  {% set active    = stats.active    if stats is defined else 0 %}
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg></div>
+      <div class="stat-num">{{ total }}</div>
+      <div class="stat-label">Всего задач</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon success">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M9 12l2 2 4-4"/>
+  </svg>
+</div>
+      <div class="stat-num">{{ completed }}</div>
+      <div class="stat-label">Выполнено</div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon warn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 6v6l4 2"/>
+  </svg>
+</div>
+      <div class="stat-num">{{ active }}</div>
+      <div class="stat-label">В работе</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <form class="search" method="get" action="/tasks">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input name="q" placeholder="Поиск задач..." value="{{ q or '' }}">
+    </form>
+    <div class="filters">
+      {% set f = filter or 'all' %}
+      <a class="pill {{ 'active' if f == 'all' else '' }}" href="/tasks?filter=all">Все</a>
+      <a class="pill {{ 'active' if f == 'active' else '' }}" href="/tasks?filter=active">Активные</a>
+      <a class="pill {{ 'active' if f == 'done' else '' }}" href="/tasks?filter=done">Выполненные</a>
+    </div>
+    <button type="button" class="btn primary" onclick="openCreateDialog()">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Добавить задачу
+  </button>
+  </div>
+<dialog id="dlg-new" class="task-dialog">
+  <form method="dialog" class="dialog-card" onsubmit="return false">
+    <button type="button" class="dialog-close" aria-label="Закрыть" onclick="closeCreateDialog()">×</button>
+    <h2 class="dialog-title">Новая задача</h2>
+
+    <div class="dialog-body">
+      <div class="form-group">
+        <label class="form-label" for="new-title">Название</label>
+        <input id="new-title" class="form-control" type="text" placeholder="Что нужно сделать?" autofocus>
+      </div>
+
+      <div class="form-row form-row--2">
+        <div class="form-group">
+          <label class="form-label" for="new-status">Статус</label>
+          <select id="new-status" class="form-control">
+            <option value="new" selected>Новая</option>
+            <option value="active">В работе</option>
+            <option value="completed">Готово</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="new-priority">Приоритет</label>
+          <select id="new-priority" class="form-control">
+            <option value="low">Низкий</option>
+            <option value="normal" selected>Обычный</option>
+            <option value="high">Высокий</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="new-desc">Описание</label>
+        <textarea id="new-desc" class="form-control" rows="6" placeholder="Коротко опишите задачу…"></textarea>
+      </div>
+    </div>
+
+    <div class="dialog-foot">
+      <button type="button" class="btn" onclick="closeCreateDialog()">Отмена</button>
+      <button type="button" class="btn primary" onclick="createTask()">Создать</button>
+    </div>
+  </form>
+</dialog>
+<script>
+  function openCreateDialog() {
+    const dlg = document.getElementById('dlg-new');
+    dlg.showModal?.() ?? dlg.setAttribute('open','');
+    document.getElementById('new-title').value = '';
+    document.getElementById('new-status').value = 'new';
+    document.getElementById('new-priority').value = 'normal';
+    document.getElementById('new-desc').value = '';
+    setTimeout(() => document.getElementById('new-title').focus(), 0);
+  }
+  function closeCreateDialog() {
+    const dlg = document.getElementById('dlg-new');
+    if (dlg && dlg.open) dlg.close();
+  }
+
+  async function createTask() {
+    const title    = document.getElementById('new-title').value.trim();
+    const status   = document.getElementById('new-status').value;
+    const priority = document.getElementById('new-priority').value;
+    const desc     = document.getElementById('new-desc').value;
+
+    if (!title) {
+      alert('Введите название задачи');
+      document.getElementById('new-title').focus();
+      return;
+    }
+
+    const payload = { title, description: desc, status, priority };
+
+    try {
+      const r = await fetch('/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, // токен — в HttpOnly cookie
+        body: JSON.stringify(payload),
+        credentials: 'same-origin'
+      });
+
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        const msg = data?.detail || `Ошибка создания (${r.status})`;
+        alert(msg);
+        return;
+        }
+
+      closeCreateDialog();
+      location.reload();
+
+    } catch (e) {
+      console.error(e);
+      alert('Сеть недоступна, попробуйте ещё раз.');
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    const dlg = document.getElementById('dlg-new');
+    if (dlg?.open && e.key === 'Enter' && document.activeElement?.id === 'new-title') {
+      e.preventDefault();
+      createTask();
+    }
+  });
+</script>
+
+  <div class="task-list">
+    {% if tasks and tasks|length > 0 %}
+      {% for t in tasks %}
+        <article
+  class="task clickable priority-{{ t.priority }} status-{{ t.status }}"
+  role="button" tabindex="0"
+  onclick="openTaskDialog('{{ t.id }}')"
+  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openTaskDialog('{{ t.id }}')}"
+>
+  <div class="task-main">  {# БЕЗ onclick здесь #}
+    <div class="task-check">
+      <input type="checkbox" disabled {{ 'checked' if t.status == 'completed' }}>
+    </div>
+    <div class="task-text">
+      <h3 class="task-title">
+        {{ t.title }}
+        {% if t.status == 'new' %}<span class="badge badge-muted">Новая</span>{% endif %}
+        {% if t.status == 'active' %}<span class="badge badge-progress">В работе</span>{% endif %}
+        {% if t.status == 'completed' %}<span class="badge badge-success">Готово</span>{% endif %}
+        {% if t.priority == 'low' %}<span class="badge badge-low">Низкий</span>{% endif %}
+        {% if t.priority == 'normal' %}<span class="badge badge-normal">Обычный</span>{% endif %}
+        {% if t.priority == 'high' %}<span class="badge badge-high">Высокий</span>{% endif %}
+      </h3>
+    </div>
+  </div>
+
+  <div class="task-actions">
+  <button type="button"
+          class="pill danger"
+          onclick="openDeleteDialog('{{ t.id }}', '{{ (t.title or 'задачу')|e }}'); event.stopPropagation();">
+    Удалить
+  </button>
+</div>
+</article>
+<dialog id="dlg-del" class="task-dialog small-dialog">
+  <form method="dialog" class="dialog-card" onsubmit="return false">
+    <h2 class="dialog-title">
+      Удалить задачу: <span id="del-title">Название</span>?
+    </h2>
+    <div class="dialog-foot">
+      <button type="button" class="btn" onclick="closeDeleteDialog()">Отмена</button>
+      <button type="button" class="btn primary" onclick="deleteTask()">Удалить</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  let __delId = null;
+
+  function openDeleteDialog(id, title){
+  __delId = id;
+  document.getElementById('del-title').textContent = title || ('#' + id);
+  const d = document.getElementById('dlg-del');
+  d.showModal?.() ?? d.setAttribute('open','');
+}
+
+  function closeDeleteDialog(){
+    const d = document.getElementById('dlg-del');
+    if (d && d.open) d.close();
+    __delId = null;
+  }
+
+  async function deleteTask(){
+    if (!__delId) return;
+
+    try{
+      const r = await fetch(`/api/todos/${__delId}`, {
+        method: 'DELETE',
+        credentials: 'same-origin' // токен из HttpOnly cookie
+      });
+
+      if (!r.ok){
+        const data = await r.json().catch(()=> ({}));
+        const msg = data?.detail || `Не удалось удалить (${r.status})`;
+        alert(msg);
+        return;
+      }
+
+      closeDeleteDialog();
+      // Проще всего — перезагрузить, чтобы обновились список и глобальные счетчики
+      location.reload();
+
+      // Если хочешь без перезагрузки:
+      // document.querySelector(`article.task[onclick*="${__delId}"]`)?.remove();
+      // (и опционально обновить цифры в .stat-num)
+    }catch(e){
+      console.error(e);
+      alert('Сеть недоступна, попробуйте ещё раз.');
+    }
+  }
+</script>
+
+<dialog id="dlg-{{ t.id }}" class="task-dialog">
+  <form method="dialog" class="dialog-card" onsubmit="return false">
+    <button
+  type="button"
+  class="dialog-close"
+  aria-label="Закрыть"
+  onclick="closeTaskDialog('{{ t.id }}')"
+>×</button>
+
+    <h2 class="dialog-title">Редактирование</h2>
+
+    <div class="dialog-body">
+  <div class="form-group">
+    <label class="form-label" for="title-{{ t.id }}">Название</label>
+    <input id="title-{{ t.id }}" class="form-control" type="text" value="{{ t.title|e }}">
+  </div>
+
+  <div class="form-row form-row--2">
+    <div class="form-group">
+      <label class="form-label" for="status-{{ t.id }}">Статус</label>
+      <select id="status-{{ t.id }}" class="form-control">
+        <option value="new"       {{ 'selected' if t.status == 'new' }}>Новая</option>
+        <option value="active"    {{ 'selected' if t.status == 'active' }}>В работе</option>
+        <option value="completed" {{ 'selected' if t.status == 'completed' }}>Готово</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="priority-{{ t.id }}">Приоритет</label>
+      <select id="priority-{{ t.id }}" class="form-control">
+        <option value="low"    {{ 'selected' if t.priority == 'low' }}>Низкий</option>
+        <option value="normal" {{ 'selected' if t.priority == 'normal' }}>Обычный</option>
+        <option value="high"   {{ 'selected' if t.priority == 'high' }}>Высокий</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="desc-{{ t.id }}">Описание</label>
+    <textarea id="desc-{{ t.id }}" class="form-control" rows="6">{{ t.description or '' }}</textarea>
+  </div>
+
+  <div class="form-group">
+    <span class="form-label">ID</span>
+    <div class="mono">#{{ t.id }}</div>
+  </div>
+</div>
+
+
+    <div class="dialog-foot">
+      <button class="btn primary" onclick="saveTask('{{ t.id }}')">Сохранить</button>
+    </div>
+  </form>
+</dialog>
+      {% endfor %}
+    {% else %}
+      <div class="empty">Пока нет задач.</div>
+    {% endif %}
+  </div>
+
+  {% if meta and meta.pages > 1 %}
+    <nav class="pager">
+      {% if meta.page > 1 %}
+        <a class="pill" href="/tasks?page={{ meta.page - 1 }}&limit={{ meta.limit }}&filter={{ filter }}&q={{ q }}">« Назад</a>
+      {% endif %}
+      <span class="muted">Стр. {{ meta.page }} из {{ meta.pages }}</span>
+      {% if meta.page < meta.pages %}
+        <a class="pill" href="/tasks?page={{ meta.page + 1 }}&limit={{ meta.limit }}&filter={{ filter }}&q={{ q }}">Вперёд »</a>
+      {% endif %}
+    </nav>
+  {% endif %}
+
+<script>
+  function closeTaskDialog(id) {
+    const dlg = document.getElementById('dlg-' + id);
+    if (dlg && dlg.open) dlg.close();
+  }
+</script>
+<script>
+  function openTaskDialog(id) {
+    const dlg = document.getElementById('dlg-' + id);
+    if (!dlg) return;
+    dlg.showModal?.() ?? dlg.setAttribute('open','');
+  }
+
+  async function saveTask(id) {
+    const title    = document.getElementById('title-' + id).value.trim();
+    const status   = document.getElementById('status-' + id).value;
+    const priority = document.getElementById('priority-' + id).value;
+    const desc     = document.getElementById('desc-' + id).value;
+
+    const payload = { title, description: desc, status, priority };
+
+    try {
+      const r = await fetch(`/api/todos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' }, // токен придёт из HttpOnly cookie
+        body: JSON.stringify(payload),
+        credentials: 'same-origin'
+      });
+
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        const msg = data?.detail || `Ошибка сохранения (${r.status})`;
+        alert(msg);
+        return;
+      }
+
+      // на успех — можно обновить карточку «на лету» или просто перезагрузить
+      location.reload();
+    } catch (e) {
+      console.error(e);
+      alert('Сеть недоступна, попробуйте ещё раз.');
+    }
+  }
+</script>
+</section>
+{% endblock %}
+
+

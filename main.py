@@ -1,0 +1,31 @@
+from contextlib import asynccontextmanager
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+
+from admin import init_admin
+from api.auth import router as auth_router
+from api.tasks import router as task_router
+from api.views import router as view_router
+from db.database import create_tables
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_tables()
+    print("Tables Created")
+    yield
+
+
+app = FastAPI(debug=True, lifespan=lifespan)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.include_router(auth_router)
+app.include_router(task_router)
+app.include_router(view_router)
+init_admin(app)
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True)
