@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-
+from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -18,9 +18,11 @@ async def lifespan(app: FastAPI):
     yield
 
 
+BASE_DIR = Path(__file__).resolve().parent
+
 app = FastAPI(debug=True, lifespan=lifespan)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(view_router)

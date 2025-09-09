@@ -4,9 +4,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from api.auth import auth_header, base_url, get_token_from_cookie
+from main import BASE_DIR
 
 router = APIRouter(tags=["Views"])
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 
 @router.get("/", response_class=HTMLResponse)
