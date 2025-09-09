@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -17,12 +18,12 @@ async def lifespan(app: FastAPI):
     print("Tables Created")
     yield
 
-
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR   = Path(__file__).resolve().parent      # R:/Projects/ToDoListAPI
+STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(debug=True, lifespan=lifespan)
 
-app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(view_router)

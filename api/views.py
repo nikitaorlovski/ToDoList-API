@@ -1,13 +1,16 @@
+from pathlib import Path
+
 import httpx
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from api.auth import auth_header, base_url, get_token_from_cookie
-from main import BASE_DIR
 
 router = APIRouter(tags=["Views"])
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+PROJECT_ROOT  = Path(__file__).resolve().parents[1]     # .../ToDoListAPI
+TEMPLATES_DIR = PROJECT_ROOT / "templates"
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 
 @router.get("/", response_class=HTMLResponse)
