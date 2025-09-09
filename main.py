@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
-
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -27,6 +27,7 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(view_router)
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 init_admin(app)
 
 if __name__ == "__main__":
