@@ -32,3 +32,6 @@ class TaskORM(Base):
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
     author: Mapped["UserOrm"] = relationship(back_populates="tasks")
+
+    def __str__(self):
+        return f"Задача {self.title}"

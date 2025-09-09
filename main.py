@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from admin import init_admin
+from admin.admin import init_admin
 from api.auth import router as auth_router
 from api.tasks import router as task_router
 from api.views import router as view_router
@@ -25,7 +25,6 @@ app.include_router(auth_router)
 app.include_router(task_router)
 app.include_router(view_router)
 init_admin(app)
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

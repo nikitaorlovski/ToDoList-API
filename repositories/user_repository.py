@@ -23,3 +23,6 @@ class UserRepository:
             select(UserOrm).where(UserOrm.email == email)
         )
         return result.scalars().first()
+
+    async def get_by_id(self, user_id: int) -> UserOrm | None:
+        return await self.session.get(UserOrm, user_id)
