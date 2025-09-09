@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     print("Tables Created")
     yield
 
-BASE_DIR   = Path(__file__).resolve().parent      # R:/Projects/ToDoListAPI
+BASE_DIR   = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(debug=True, lifespan=lifespan)
