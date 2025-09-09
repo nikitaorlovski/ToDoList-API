@@ -1,5 +1,4 @@
 .venv/
-.env
 tasks.db
 .idea/
 __pycache__/
