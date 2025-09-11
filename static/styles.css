@@ -391,3 +391,86 @@ textarea.form-control{ min-height: 140px; resize: vertical; line-height: 1.5; }
   .toolbar{ gap: 10px; }
   .task{ padding: 14px; }
 }
+/* ================= MOBILE ONLY ================= */
+@media (max-width: 640px){
+
+  /* 0) Общие мелочи */
+  .page{ position: relative; padding-top: 12px; }
+
+  /* 1) Заголовок «Мои задачи» — сделать читаемым на тёмном фоне */
+  .page .title{
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    color: #e8eef6 !important;            /* просто светлый текст без градиента */
+    text-shadow: 0 1px 0 rgba(0,0,0,.25); /* чуть контраста */
+  }
+
+  /* 2) Кнопка «выход» — убрать «пустое место», закрепить в углу */
+  .page-head{ padding-right: 48px; }      /* чтобы заголовок не налезал на крестик */
+  .page-head .head-actions{
+    position: absolute;
+    top: 10px;
+    right: 12px;
+  }
+  .page-head .icon-btn{ width: 34px; height: 34px; }
+
+  /* 3) Бейджи приоритетов — всегда в строку и компактные */
+  .task-title{
+    line-height: 1.25;
+    word-break: break-word;
+  }
+  .task-title .badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;         /* меньше — помещаются в строку */
+    font-size: 11px;
+    margin-left: 6px;
+    white-space: nowrap;      /* не переносим сам бейдж */
+  }
+
+  /* 4) Диалоги (Новая задача / Редактирование) — ещё компактнее и точно помещаются */
+  .task-dialog .dialog-card{
+    width: 100vw !important;
+    max-width: 100vw;
+    height: 100svh;             /* учитывает адресную строку браузера */
+    max-height: 100svh;
+    min-height: 0;
+    padding: 16px;
+    border-radius: 16px 16px 0 0;
+  }
+  .task-dialog .dialog-body{
+    overflow: auto;             /* прокручивается содержимое */
+    padding-right: 0;
+  }
+  .dialog-title{ font-size: 22px; margin: 0 36px 10px 0; }
+  .dialog-close{ top: 8px; right: 8px; width: 32px; height: 32px; }
+
+  /* более маленькие поля и селекты — чтобы всё влезало даже с клавиатурой */
+  .form-label{ font-size: 13px; }
+  .form-control{ padding: 10px 12px; font-size: 14px; }
+  textarea.form-control{ min-height: 110px; }
+
+  /* футер диалога всегда виден + безопасная зона */
+  .dialog-foot{
+    padding-top: 6px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .dialog-foot .btn{
+    width: 100%;
+    min-width: unset;
+    padding: 12px 14px;
+  }
+
+  /* 5) Центрирование карточки логина/регистрации (с прошлого шага — оставляю здесь на всякий случай) */
+  .container--auth{
+    min-height: 100dvh;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-card{ width: 100%; max-width: 420px; margin-inline: auto; }
+  .auth-body{ padding: 28px 20px; }
+}
