@@ -457,9 +457,8 @@ textarea.form-control{ min-height: 140px; resize: vertical; line-height: 1.5; }
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
   .dialog-foot .btn{
-    width: 100%;
-    min-width: unset;
-    padding: 12px 14px;
+    font-size: 14px;
+    padding: 10px 12px;
   }
 
   /* 5) Центрирование карточки логина/регистрации (с прошлого шага — оставляю здесь на всякий случай) */
@@ -472,4 +471,40 @@ textarea.form-control{ min-height: 140px; resize: vertical; line-height: 1.5; }
   }
   .auth-card{ width: 100%; max-width: 420px; margin-inline: auto; }
   .auth-body{ padding: 28px 20px; }
+}
+@media (max-width: 640px){
+
+  /* Маленький диалог удаления — центрированный */
+  .small-dialog .dialog-card{
+    width: 90vw;              /* компактная ширина */
+    max-width: 360px;         /* ограничение сверху */
+    height: auto;             /* по контенту */
+    min-height: unset;
+    padding: 20px 18px;
+    border-radius: 14px;
+    margin: auto;             /* центрирование */
+  }
+
+  .small-dialog::backdrop{
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(2px);
+  }
+
+  .small-dialog .dialog-title{
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .small-dialog .dialog-foot{
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .small-dialog .btn{
+    flex: 1;
+    max-width: 140px;
+    font-size: 14px;
+    padding: 10px 12px;
+  }
 }
