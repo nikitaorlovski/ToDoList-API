@@ -106,6 +106,12 @@
         <label class="form-label" for="new-desc">Описание</label>
         <textarea id="new-desc" class="form-control" rows="6" placeholder="Коротко опишите задачу…"></textarea>
       </div>
+
+      <!-- Добавлено поле для ввода даты -->
+      <div class="form-group">
+        <label class="form-label" for="new-term-date">Дата выполнения</label>
+        <input id="new-term-date" class="form-control" type="date">
+      </div>
     </div>
 
     <div class="dialog-foot">
@@ -114,6 +120,7 @@
     </div>
   </form>
 </dialog>
+
 <script>
   function openCreateDialog() {
     const dlg = document.getElementById('dlg-new');
@@ -130,42 +137,43 @@
   }
 
   async function createTask() {
-    const title    = document.getElementById('new-title').value.trim();
-    const status   = document.getElementById('new-status').value;
-    const priority = document.getElementById('new-priority').value;
-    const desc     = document.getElementById('new-desc').value;
+  const title    = document.getElementById('new-title').value.trim();
+  const status   = document.getElementById('new-status').value;
+  const priority = document.getElementById('new-priority').value;
+  const desc     = document.getElementById('new-desc').value;
+  const termDate = document.getElementById('new-term-date').value; // Получаем значение даты
 
-    if (!title) {
-      alert('Введите название задачи');
-      document.getElementById('new-title').focus();
+  if (!title) {
+    alert('Введите название задачи');
+    document.getElementById('new-title').focus();
+    return;
+  }
+
+  const payload = { title, description: desc, status, priority, term_date: termDate }; // Передаем дату
+
+  try {
+    const r = await fetch('/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }, // токен — в HttpOnly cookie
+      body: JSON.stringify(payload),
+      credentials: 'same-origin'
+    });
+
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      const msg = data?.detail || `Ошибка создания (${r.status})`;
+      alert(msg);
       return;
     }
 
-    const payload = { title, description: desc, status, priority };
-
-    try {
-      const r = await fetch('/api/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // токен — в HttpOnly cookie
-        body: JSON.stringify(payload),
-        credentials: 'same-origin'
-      });
-
-      if (!r.ok) {
-        const data = await r.json().catch(() => ({}));
-        const msg = data?.detail || `Ошибка создания (${r.status})`;
-        alert(msg);
-        return;
-        }
-
-      closeCreateDialog();
-      location.reload();
-
-    } catch (e) {
-      console.error(e);
-      alert('Сеть недоступна, попробуйте ещё раз.');
-    }
+    closeCreateDialog();
+    location.reload();
+  } catch (e) {
+    console.error(e);
+    alert('Сеть недоступна, попробуйте ещё раз.');
   }
+}
+
 
   document.addEventListener('keydown', (e) => {
     const dlg = document.getElementById('dlg-new');
@@ -270,58 +278,58 @@
 
 <dialog id="dlg-{{ t.id }}" class="task-dialog">
   <form method="dialog" class="dialog-card" onsubmit="return false">
-    <button
-  type="button"
-  class="dialog-close"
-  aria-label="Закрыть"
-  onclick="closeTaskDialog('{{ t.id }}')"
->×</button>
-
+    <button type="button" class="dialog-close" aria-label="Закрыть" onclick="closeTaskDialog('{{ t.id }}')">×</button>
     <h2 class="dialog-title">Редактирование</h2>
 
     <div class="dialog-body">
-  <div class="form-group">
-    <label class="form-label" for="title-{{ t.id }}">Название</label>
-    <input id="title-{{ t.id }}" class="form-control" type="text" value="{{ t.title|e }}">
-  </div>
+      <div class="form-group">
+        <label class="form-label" for="title-{{ t.id }}">Название</label>
+        <input id="title-{{ t.id }}" class="form-control" type="text" value="{{ t.title|e }}">
+      </div>
 
-  <div class="form-row form-row--2">
-    <div class="form-group">
-      <label class="form-label" for="status-{{ t.id }}">Статус</label>
-      <select id="status-{{ t.id }}" class="form-control">
-        <option value="new"       {{ 'selected' if t.status == 'new' }}>Новая</option>
-        <option value="active"    {{ 'selected' if t.status == 'active' }}>В работе</option>
-        <option value="completed" {{ 'selected' if t.status == 'completed' }}>Готово</option>
-      </select>
+      <div class="form-row form-row--2">
+        <div class="form-group">
+          <label class="form-label" for="status-{{ t.id }}">Статус</label>
+          <select id="status-{{ t.id }}" class="form-control">
+            <option value="new"       {{ 'selected' if t.status == 'new' }}>Новая</option>
+            <option value="active"    {{ 'selected' if t.status == 'active' }}>В работе</option>
+            <option value="completed" {{ 'selected' if t.status == 'completed' }}>Готово</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="priority-{{ t.id }}">Приоритет</label>
+          <select id="priority-{{ t.id }}" class="form-control">
+            <option value="low"    {{ 'selected' if t.priority == 'low' }}>Низкий</option>
+            <option value="normal" {{ 'selected' if t.priority == 'normal' }}>Обычный</option>
+            <option value="high"   {{ 'selected' if t.priority == 'high' }}>Высокий</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="desc-{{ t.id }}">Описание</label>
+        <textarea id="desc-{{ t.id }}" class="form-control" rows="6">{{ t.description or '' }}</textarea>
+      </div>
+
+      <!-- Добавлено поле для ввода даты -->
+      <div class="form-group">
+        <label class="form-label" for="term-date-{{ t.id }}">Дата выполнения</label>
+        <input id="term-date-{{ t.id }}" class="form-control" type="date" value="{{ t.term_date }}">
+      </div>
+
+      <div class="form-group">
+        <span class="form-label">ID</span>
+        <div class="mono">#{{ t.id }}</div>
+      </div>
     </div>
-
-    <div class="form-group">
-      <label class="form-label" for="priority-{{ t.id }}">Приоритет</label>
-      <select id="priority-{{ t.id }}" class="form-control">
-        <option value="low"    {{ 'selected' if t.priority == 'low' }}>Низкий</option>
-        <option value="normal" {{ 'selected' if t.priority == 'normal' }}>Обычный</option>
-        <option value="high"   {{ 'selected' if t.priority == 'high' }}>Высокий</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label class="form-label" for="desc-{{ t.id }}">Описание</label>
-    <textarea id="desc-{{ t.id }}" class="form-control" rows="6">{{ t.description or '' }}</textarea>
-  </div>
-
-  <div class="form-group">
-    <span class="form-label">ID</span>
-    <div class="mono">#{{ t.id }}</div>
-  </div>
-</div>
-
 
     <div class="dialog-foot">
       <button class="btn primary" onclick="saveTask('{{ t.id }}')">Сохранить</button>
     </div>
   </form>
 </dialog>
+
       {% endfor %}
     {% else %}
       <div class="empty">Пока нет задач.</div>
@@ -354,35 +362,37 @@
   }
 
   async function saveTask(id) {
-    const title    = document.getElementById('title-' + id).value.trim();
-    const status   = document.getElementById('status-' + id).value;
-    const priority = document.getElementById('priority-' + id).value;
-    const desc     = document.getElementById('desc-' + id).value;
+  const title    = document.getElementById('title-' + id).value.trim();
+  const status   = document.getElementById('status-' + id).value;
+  const priority = document.getElementById('priority-' + id).value;
+  const desc     = document.getElementById('desc-' + id).value;
+  const termDate = document.getElementById('term-date-' + id).value; // Получаем значение даты
 
-    const payload = { title, description: desc, status, priority };
+  const payload = { title, description: desc, status, priority, term_date: termDate }; // Передаем дату
 
-    try {
-      const r = await fetch(`/api/todos/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' }, // токен придёт из HttpOnly cookie
-        body: JSON.stringify(payload),
-        credentials: 'same-origin'
-      });
+  try {
+    const r = await fetch(`/api/todos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' }, // токен придёт из HttpOnly cookie
+      body: JSON.stringify(payload),
+      credentials: 'same-origin'
+    });
 
-      if (!r.ok) {
-        const data = await r.json().catch(() => ({}));
-        const msg = data?.detail || `Ошибка сохранения (${r.status})`;
-        alert(msg);
-        return;
-      }
-
-      // на успех — можно обновить карточку «на лету» или просто перезагрузить
-      location.reload();
-    } catch (e) {
-      console.error(e);
-      alert('Сеть недоступна, попробуйте ещё раз.');
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      const msg = data?.detail || `Ошибка сохранения (${r.status})`;
+      alert(msg);
+      return;
     }
+
+    // на успех — можно обновить карточку «на лету» или просто перезагрузить
+    location.reload();
+  } catch (e) {
+    console.error(e);
+    alert('Сеть недоступна, попробуйте ещё раз.');
   }
+}
+
 </script>
 </section>
 {% endblock %}

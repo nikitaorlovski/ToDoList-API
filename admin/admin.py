@@ -91,7 +91,7 @@ class TasksAdmin(ModelView, model=TaskORM):
     name = "Задача"
     name_plural = "Задачи"
     icon = "fa-solid fa-tasks"
-    column_labels = {"title": "Название", "description": "Описание", "status": "Статус", "priority": "Приоритет", "author": "Автор"}
+    column_labels = {"title": "Название", "description": "Описание", "status": "Статус", "priority": "Приоритет","term_date":"Срок выполнения", "author": "Автор"}
 
 def init_admin(app):
     authentication_backend = AdminAuth(secret_key="...")

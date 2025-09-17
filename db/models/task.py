@@ -1,10 +1,10 @@
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
 from db.models.enums import TaskPriority, TaskStatus
-
+from datetime import date
 
 class TaskORM(Base):
     __tablename__ = "tasks"
@@ -27,7 +27,7 @@ class TaskORM(Base):
         index=True,
         nullable=False,
     )
-
+    term_date: Mapped[date] = mapped_column(Date)
     author_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
