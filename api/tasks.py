@@ -64,6 +64,7 @@ async def create_todo(
         description=task.description,
         status=task.status,
         priority=task.priority,
+        term_date=task.term_date,
         author_id=user.id,
     )
     created = await repo.create_new_task(new_task)
@@ -89,6 +90,8 @@ async def update_todo(
     if task_update.status is not None:
         fields["status"] = task_update.status
     if task_update.priority is not None:
+        fields["priority"] = task_update.priority
+    if task_update.term_date is not None:
         fields["priority"] = task_update.priority
     return await repo.update_task(task, **fields)
 
