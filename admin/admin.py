@@ -84,7 +84,6 @@ class UserAdmin(ModelView, model=UserOrm):
             return
 
         if isinstance(raw, str):
-            # Если пароль был изменен, хэшируем новый пароль.
             data["hashed_password"] = hash_password(raw)
 
 class TasksAdmin(ModelView, model=TaskORM):

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
@@ -23,7 +23,7 @@ def encode_jwt(
     expire_minutes: int = settings.auth_jwt.access_token_expire,
 ):
     to_encode = payload.copy()
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     expire = now + timedelta(minutes=expire_minutes)
     to_encode.update(exp=expire, iat=now)
     encoded = jwt.encode(to_encode, private_key, algorithm)
