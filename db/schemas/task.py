@@ -1,12 +1,12 @@
 from typing import Optional
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, ConfigDict, field_serializer, Field
 
 from db.models.enums import TaskPriority, TaskStatus
 from datetime import date
 
 class TaskSchema(BaseModel):
-    title: str
+    title: str = Field(..., min_length=1)
     description: Optional[str] = None
     status: TaskStatus = TaskStatus.NEW
     priority: TaskPriority = TaskPriority.NORMAL
@@ -18,10 +18,12 @@ class TaskSchema(BaseModel):
             return date.fromisoformat(v)
         return v
 
-    class Config:
-        json_encoders = {
-            date: lambda v: v.strftime('%Y-%m-%d')  # Сериализуем в строку в формате 'YYYY-MM-DD'
-        }
+    @field_serializer('term_date')
+    def serialize_term_date(self, term_date: Optional[date], _info):
+        if term_date is None:
+            return None
+        return term_date.strftime('%Y-%m-%d')
+
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = None

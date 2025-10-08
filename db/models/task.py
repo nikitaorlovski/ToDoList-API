@@ -27,7 +27,7 @@ class TaskORM(Base):
         index=True,
         nullable=False,
     )
-    term_date: Mapped[date] = mapped_column(Date)
+    term_date: Mapped[date] = mapped_column(Date, nullable=True)
     author_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
     )
