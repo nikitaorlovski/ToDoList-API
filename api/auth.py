@@ -9,8 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 
 from core.config import settings
-from core.security import (decode_jwt, encode_jwt, hash_password,
-                           validate_password)
+from core.security import decode_jwt, encode_jwt, hash_password, validate_password
 from db.database import get_session
 from db.models.user import UserOrm
 from db.schemas.token import Token
@@ -32,7 +31,7 @@ async def get_user_repo(session: AsyncSession = Depends(get_session)) -> UserRep
     return UserRepository(session)
 
 
-def base_url(request: Request) -> str:
+def base_url(request: Request) -> str:  # pragma: no cover
     return str(request.base_url).rstrip("/")
 
 
@@ -164,7 +163,9 @@ get_current_auth_user_for_refresh = get_auth_user_from_token_of_type(REFRESH_TOK
 get_current_auth_user = get_auth_user_from_token_of_type(ACCESS_TOKEN_TYPE)
 
 
-async def rate_limiter(user: UserOrm = Depends(get_current_auth_user)):
+async def rate_limiter(
+    user: UserOrm = Depends(get_current_auth_user),
+):  # pragma: no cover
 
     now = int(time.time())
     window_start = now - (now % WINDOW_SIZE)

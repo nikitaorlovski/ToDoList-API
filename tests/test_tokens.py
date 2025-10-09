@@ -14,3 +14,15 @@ async def test_refresh_token(authorized_client, test_db_session):
     assert response.status_code == 200, response.text
     data = response.json()
     assert "access_token" in data
+
+
+@pytest.mark.asyncio
+async def test_refresh_token_invalid(authorized_client, test_db_session):
+    client, user = authorized_client
+
+    response = await client.post("/api/refresh")
+    assert response.status_code == 401, response.text
+    assert (
+        "Неправильный тип токена: 'access' когда ожидался 'refresh'"
+        == response.json()["detail"]
+    )
