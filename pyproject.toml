@@ -4,6 +4,15 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 
+[tool.coverage.run]
+omit = [
+    "*/api/views.py",           # Исключаем весь файл views.py
+    "*/templates/*",        # Исключаем шаблоны
+    "*/static/*",           # Исключаем статические файлы
+    "*/migrations/*",       # Исключаем миграции
+    "*/tests/*",            # Исключаем сами тесты
+]
+
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = ">=0.116.1,<0.117.0"
@@ -22,6 +31,8 @@ itsdangerous = ">=2.2.0,<3.0.0"
 pytest = "^8.4.2"
 pytest-asyncio = "^1.2.0"
 pytest-cov = "^7.0.0"
+black = "^25.9.0"
+coverage = "^7.10.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"

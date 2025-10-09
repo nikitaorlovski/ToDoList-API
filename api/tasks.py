@@ -92,7 +92,7 @@ async def update_todo(
     if task_update.priority is not None:
         fields["priority"] = task_update.priority
     if task_update.term_date is not None:
-        fields["priority"] = task_update.priority
+        fields["term_date"] = task_update.term_date
     return await repo.update_task(task, **fields)
 
 

@@ -53,13 +53,19 @@ class AdminAuth(AuthenticationBackend):
 
         return True
 
+
 class UserAdmin(ModelView, model=UserOrm):
     column_list = [UserOrm.id, UserOrm.name, UserOrm.email, UserOrm.is_admin]
     name = "Пользователь"
     name_plural = "Пользователи"
     icon = "fa-solid fa-user"
     column_details_exclude_list = ["hashed_password"]
-    column_labels = {"hashed_password": "Пароль", "name": "Имя", "tasks": "Задачи", "is_admin": "Админ?"}
+    column_labels = {
+        "hashed_password": "Пароль",
+        "name": "Имя",
+        "tasks": "Задачи",
+        "is_admin": "Админ?",
+    }
     form_overrides = {"hashed_password": PasswordField}
     form_args = {
         "hashed_password": {
@@ -72,11 +78,11 @@ class UserAdmin(ModelView, model=UserOrm):
     }
 
     async def on_model_change(
-            self,
-            data: dict,
-            model: UserOrm,
-            is_created: bool,
-            request: Request,
+        self,
+        data: dict,
+        model: UserOrm,
+        is_created: bool,
+        request: Request,
     ) -> None:
         raw = data.get("hashed_password")
         if not is_created and (raw is None or raw == ""):
@@ -86,12 +92,21 @@ class UserAdmin(ModelView, model=UserOrm):
         if isinstance(raw, str):
             data["hashed_password"] = hash_password(raw)
 
+
 class TasksAdmin(ModelView, model=TaskORM):
     column_list = [c.name for c in TaskORM.__table__.columns]
     name = "Задача"
     name_plural = "Задачи"
     icon = "fa-solid fa-tasks"
-    column_labels = {"title": "Название", "description": "Описание", "status": "Статус", "priority": "Приоритет","term_date":"Срок выполнения", "author": "Автор"}
+    column_labels = {
+        "title": "Название",
+        "description": "Описание",
+        "status": "Статус",
+        "priority": "Приоритет",
+        "term_date": "Срок выполнения",
+        "author": "Автор",
+    }
+
 
 def init_admin(app):
     authentication_backend = AdminAuth(secret_key="...")
