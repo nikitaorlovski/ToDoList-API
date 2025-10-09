@@ -6,6 +6,7 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
+from api.auth import rate_limiter
 from core.security import hash_password
 from db.models.enums import TaskStatus, TaskPriority
 from db.models.task import TaskORM
@@ -51,6 +52,7 @@ async def client(test_db_session):
             yield session
 
     app.dependency_overrides[get_session] = override_get_session
+    app.dependency_overrides[rate_limiter] = lambda: None
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:

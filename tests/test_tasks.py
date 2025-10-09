@@ -84,6 +84,28 @@ async def test_update_todo_id_not_int(authorized_client):
     assert response.status_code == 422
 
 @pytest.mark.asyncio
+async def test_update_todo_valid_multiple_fields(authorized_client, create_task_for_user):
+    client, user = authorized_client
+    task = await create_task_for_user(user, title="Old", description="Desc")
+
+    response = await client.put(
+        f"/api/todos/{task.id}",
+        json={
+            "title": "New title",
+            "description": "New desc",
+            "status": "active",
+            "priority": "high",
+            "term_date": "2025-12-31",
+        }
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["title"] == "New title"
+    assert data["description"] == "New desc"
+    assert data["status"] == "active"
+    assert data["priority"] == "high"
+
+@pytest.mark.asyncio
 async def test_delete_todo_valid(authorized_client,create_task_for_user):
     client, user = authorized_client
     task = await create_task_for_user(user, title="Hellow")

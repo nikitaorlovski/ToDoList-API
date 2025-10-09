@@ -1,1 +1,1 @@
-[![codecov](https://codecov.io/gh/USERNAME/REPOSITORY/branch/main/graph/badge.svg)](https://codecov.io/gh/USERNAME/REPOSITORY)
+[![codecov](https://codecov.io/gh/nikitaorlovski/ToDoList-API/branch/main/graph/badge.svg)](https://codecov.io/gh/nikitaorlovski/ToDoList-API)
