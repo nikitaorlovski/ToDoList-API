@@ -160,11 +160,11 @@ def get_auth_user_from_token_of_type(token_type: str):
 
 
 get_current_auth_user_for_refresh = get_auth_user_from_token_of_type(REFRESH_TOKEN_TYPE)
-get_current_auth_user = get_auth_user_from_token_of_type(ACCESS_TOKEN_TYPE)
+get_current_auth_user_for_access = get_auth_user_from_token_of_type(ACCESS_TOKEN_TYPE)
 
 
 async def rate_limiter(
-    user: UserOrm = Depends(get_current_auth_user),
+    user: UserOrm = Depends(get_current_auth_user_for_access),
 ):  # pragma: no cover
 
     now = int(time.time())
