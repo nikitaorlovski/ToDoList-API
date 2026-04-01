@@ -1,4 +1,8 @@
 .venv/
 tasks.db
+test.db
 .idea/
 __pycache__/
+public.rem
+private.pem
+.env

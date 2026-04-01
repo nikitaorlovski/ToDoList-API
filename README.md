@@ -44,3 +44,28 @@
 ```bash
 git clone https://github.com/nikitaorlovski/ToDoList-API.git
 cd ToDoList-API
+```
+### 2. Создание приватного ключа (private.pem)
+```bash
+openssl genpkey -algorithm RSA -out private.pem -aes256 -pkeyopt rsa_keygen_bits:2048
+```
+
+### 3. Извлечение публичного ключа (public.pem)
+```bash
+openssl rsa -pubout -in private.pem -out public.pem
+```
+
+### 4. Создайте файл .env с переменной:
+```bash
+ALGORITHM=RS256
+```
+
+### 5. Установите зависимости с помощью poetry
+```bash
+poetry install
+```
+
+### 6. Запустите приложение
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
