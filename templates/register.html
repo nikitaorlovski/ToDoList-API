@@ -12,14 +12,9 @@
         <div class="auth-alert">{{ error }}</div>
       {% endif %}
 
-      <form method="post" action="/register" class="auth-form" onsubmit="
-        const p=document.getElementById('reg_password');
-        const c=document.getElementById('reg_confirm');
-        if(p.value!==c.value){ alert('Пароли не совпадают'); return false; }
-        return true;
-      ">
+      <form method="post" action="/register" class="auth-form" id="registrationForm">
         <label class="auth-label" for="name">Имя</label>
-        <div class="auth-row">
+        <div class="auth-row {% if name_error %}auth-row--error{% endif %}">
           <span class="auth-icon">
             <svg viewBox="0 0 24 24">
               <circle cx="12" cy="8" r="4" fill="none"/>
@@ -27,10 +22,13 @@
             </svg>
           </span>
           <input class="auth-input" id="name" name="name" type="text" required value="{{ name or '' }}">
+          {% if name_error %}
+            <div class="auth-error-hint">{{ name_error }}</div>
+          {% endif %}
         </div>
 
         <label class="auth-label" for="email">Email</label>
-        <div class="auth-row">
+        <div class="auth-row {% if email_error %}auth-row--error{% endif %}">
           <span class="auth-icon">
             <svg viewBox="0 0 24 24">
               <rect x="3" y="5" width="18" height="14" rx="2" ry="2" fill="none"/>
@@ -38,10 +36,13 @@
             </svg>
           </span>
           <input class="auth-input" id="email" name="email" type="email" required value="{{ email or '' }}">
+          {% if email_error %}
+            <div class="auth-error-hint">{{ email_error }}</div>
+          {% endif %}
         </div>
 
         <label class="auth-label" for="reg_password">Пароль</label>
-        <div class="auth-row">
+        <div class="auth-row {% if password_error %}auth-row--error{% endif %}">
           <span class="auth-icon">
             <svg viewBox="0 0 24 24">
               <rect x="6" y="11" width="12" height="10" rx="2" ry="2" fill="none"/>
@@ -56,17 +57,20 @@
               <circle cx="12" cy="12" r="3" fill="none"/>
             </svg>
           </button>
+          {% if password_error %}
+            <div class="auth-error-hint">{{ password_error }}</div>
+          {% endif %}
         </div>
 
         <label class="auth-label" for="reg_confirm">Повторите пароль</label>
-        <div class="auth-row">
+        <div class="auth-row {% if confirm_error %}auth-row--error{% endif %}">
           <span class="auth-icon">
             <svg viewBox="0 0 24 24">
               <rect x="6" y="11" width="12" height="10" rx="2" ry="2" fill="none"/>
               <path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none"/>
             </svg>
           </span>
-          <input class="auth-input" id="reg_confirm" type="password" required>
+          <input class="auth-input" id="reg_confirm" name="password_confirm" type="password" required>
           <button type="button" class="auth-eye" aria-label="Показать пароль"
             onclick="const i=document.getElementById('reg_confirm'); i.type=i.type==='password'?'text':'password'">
             <svg viewBox="0 0 24 24">
@@ -74,6 +78,9 @@
               <circle cx="12" cy="12" r="3" fill="none"/>
             </svg>
           </button>
+          {% if confirm_error %}
+            <div class="auth-error-hint">{{ confirm_error }}</div>
+          {% endif %}
         </div>
 
         <button class="auth-btn" type="submit">Создать аккаунт</button>
@@ -85,4 +92,58 @@
     </div>
   </div>
 </div>
+
+<script>
+document.getElementById('registrationForm').onsubmit = function(e) {
+  const password = document.getElementById('reg_password');
+  const confirm = document.getElementById('reg_confirm');
+  const email = document.getElementById('email');
+
+  // Проверка пароля на совпадение
+  if (password.value !== confirm.value) {
+    e.preventDefault();
+    alert('Пароли не совпадают');
+    return false;
+  }
+
+  // Проверка email на наличие символа @ и точки после него
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(email.value)) {
+    e.preventDefault();
+    alert('Пожалуйста, введите правильный email с точкой после @');
+    return false;
+  }
+
+  return true;
+};
+</script>
+
 {% endblock %}
+
+<style>
+/* Стили для ошибок */
+.auth-alert--error {
+  background-color: #fee;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.auth-row--error {
+  position: relative;
+}
+
+.auth-row--error .auth-input {
+  border-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+.auth-error-hint {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+</style>

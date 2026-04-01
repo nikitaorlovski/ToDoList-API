@@ -5,13 +5,22 @@ from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.auth import (create_access_token, get_current_auth_user,
-                      get_current_auth_user_for_refresh, rate_limiter)
+from api.auth import (
+    create_access_token,
+    get_current_auth_user_for_access,
+    get_current_auth_user_for_refresh,
+    rate_limiter,
+)
 from db.database import get_session
 from db.models.task import TaskORM
 from db.models.user import UserOrm
-from db.schemas.task import (PaginatedTasks, TaskOut, TaskOutPublic,
-                             TaskSchema, TaskUpdate)
+from db.schemas.task import (
+    PaginatedTasks,
+    TaskOut,
+    TaskOutPublic,
+    TaskSchema,
+    TaskUpdate,
+)
 from db.schemas.token import Token
 from repositories.task_repository import TaskRepository
 
@@ -25,7 +34,7 @@ async def get_task_repo(session: AsyncSession = Depends(get_session)) -> TaskRep
 
 async def get_owned_task(
     task_id: Annotated[int, Path(ge=1)],
-    user: UserOrm = Depends(get_current_auth_user),
+    user: UserOrm = Depends(get_current_auth_user_for_access),
     repo: TaskRepository = Depends(get_task_repo),
 ):
     task = await repo.get_by_id(task_id)
@@ -56,7 +65,7 @@ async def refreshed(user: UserOrm = Depends(get_current_auth_user_for_refresh)):
 )
 async def create_todo(
     task: TaskSchema,
-    user: UserOrm = Depends(get_current_auth_user),
+    user: UserOrm = Depends(get_current_auth_user_for_access),
     repo: TaskRepository = Depends(get_task_repo),
 ) -> TaskORM:
     new_task = TaskORM(
@@ -111,7 +120,7 @@ async def delete_todo(
 
 @router.get("/todos/{page}/{limit}", response_model=PaginatedTasks)
 async def get_tasks_from_page(
-    user: UserOrm = Depends(get_current_auth_user),
+    user: UserOrm = Depends(get_current_auth_user_for_access),
     page: int = Path(ge=1),
     limit: int = Path(ge=1, le=100),
     repo: TaskRepository = Depends(get_task_repo),
